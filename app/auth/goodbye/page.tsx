@@ -1,7 +1,6 @@
 // app/auth/goodbye/page.tsx
 "use client";
 
-import { useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { RocketIcon } from "lucide-react";
@@ -61,7 +60,7 @@ export default function GoodbyePage() {
             className="w-full border-indigo-300 text-indigo-600 hover:bg-indigo-50"
             onClick={handleGoHome}
           >
-            Retour à l'accueil
+            Retour à l&apos;accueil
           </Button>
         </div>
       </div>

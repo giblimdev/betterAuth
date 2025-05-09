@@ -49,11 +49,7 @@ const UseFull = () => {
     {
       title: "Formulaires & Validation",
       icon: <Key className="w-5 h-5" />,
-      items: [
-        "npm install react-hook-form",
-        "npm install zod",
-        "npm install sonner",
-      ],
+      items: ["npm install react-hook-form", "npm install zod"],
     },
     {
       title: "Emails",

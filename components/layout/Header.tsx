@@ -1,5 +1,6 @@
 import Link from "next/link";
 import IsConnected from "@/components/layout/UserAuthDisplay";
+import NavHeader from "@/components/layout/NavHeader";
 
 export default function Header() {
   return (
@@ -10,20 +11,7 @@ export default function Header() {
             Mon Application
           </Link>
 
-          <nav className="hidden md:flex gap-4">
-            <Link href="/features" className="hover:underline">
-              Fonctionnalités
-            </Link>
-            <Link href="/pricing" className="hover:underline">
-              Tarifs
-            </Link>
-            <Link href="/about" className="hover:underline">
-              À propos
-            </Link>
-            <Link href="/dev" className="hover:underline">
-              Dev
-            </Link>
-          </nav>
+          <NavHeader />
         </div>
         <IsConnected />
       </div>

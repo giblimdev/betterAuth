@@ -3,46 +3,28 @@
 
 import { auth } from "@/lib/auth/auth";
 import { cookies, headers } from "next/headers";
-import { redirect } from "next/navigation";
 
-/**
- * Déconnexion côté serveur (pour Server Components/Actions)
- */
 export async function serverLogOut(redirectPath: string = "/auth/goodbye") {
   try {
-    // 1. Invalider la session côté serveur
+    // Invalidation de la session
     await auth.api.signOut({
-      headers: Object.fromEntries(await headers()),
+      headers: Object.fromEntries(Object.entries(await headers())),
     });
 
-    // 2. Nettoyer les cookies
-    (
-      await // 2. Nettoyer les cookies
-      cookies()
-    ).delete("auth_token");
-    (await cookies()).delete("session_token");
+    // Nettoyage des cookies
+    const cookieStore = cookies();
+    (await cookieStore).delete("auth_token");
+    (await cookieStore).delete("session_token");
 
-    // 3. Rediriger
-    redirect(redirectPath);
+    // Retourne l'URL de redirection sans déclencher la redirection ici
+    return redirectPath;
   } catch (error) {
     console.error("Logout failed:", error);
-    redirect(`${redirectPath}?error=logout_failed`);
+    return `${redirectPath}?error=logout_failed`;
   }
 }
 
-/**
- * API pour la déconnexion côté client
- */
-export async function createClientLogOutAction() {
+export async function getClientLogOutAction() {
   "use server";
-
-  return async function clientLogOutAction() {
-    try {
-      // Réutilise la logique serveur
-      await serverLogOut();
-    } catch (error) {
-      console.error("Client logout failed:", error);
-      throw error;
-    }
-  };
+  return serverLogOut;
 }

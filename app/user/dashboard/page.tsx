@@ -2,11 +2,10 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth/auth";
-import { authClient } from "@/lib/auth/auth-client";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import { SignOutButton } from "@/components/auth/sign-out-button";
 
 interface UserSession {
   user: {
@@ -43,14 +42,14 @@ export default async function DashboardPage() {
   })) as UserSession | null;
 
   if (!session?.user) {
-    redirect("/login?error=session_expired");
+    redirect("/");
   }
 
   const { user } = session;
   const lastSession = user.sessions?.[0];
   const socialAccounts = user.accounts || [];
 
-  // Format date in user's language
+  // Formatage des dates
   const formatDate = (date?: Date | null) =>
     date?.toLocaleDateString(user.lang || "en-US", {
       year: "numeric",
@@ -58,9 +57,9 @@ export default async function DashboardPage() {
       day: "numeric",
       hour: "2-digit",
       minute: "2-digit",
-    }) || "Not available";
+    }) || "N/A";
 
-  // Simplified user agent parser
+  // Analyse simplifiée de l'user agent
   const parseUserAgent = (ua?: string | null) => {
     if (!ua) return "Unknown";
     const browsers = ["Chrome", "Firefox", "Safari", "Edge", "Opera"];
@@ -72,6 +71,7 @@ export default async function DashboardPage() {
     return `${detectedBrowser || "Browser"} on ${detectedOS || "Device"}`;
   };
 
+  // Initiales pour l'avatar
   const getInitials = (name?: string | null) =>
     name
       ?.split(" ")
@@ -80,26 +80,12 @@ export default async function DashboardPage() {
       .substring(0, 2)
       .toUpperCase() || "U";
 
-  const handleSignOut = async () => {
-    "use server";
-    try {
-      // Server-side logout
-      await auth.api.signOut({
-        headers: Object.fromEntries(await headers()),
-      });
-
-      // Client-side logout via redirect
-      redirect("/auth/goodbye");
-    } catch (error) {
-      console.error("Logout failed:", error);
-      redirect("/auth/goodbye?error=logout_failed");
-    }
-  };
+  // Gestion de la déconnexion via l'utilitaire
 
   return (
     <div className="container mx-auto p-4 md:p-8 space-y-6">
-      {/* Header Section */}
-      <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+      {/* En-tête */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div className="flex items-center gap-4">
           <Avatar className="h-16 w-16">
             <AvatarImage src={user.image || undefined} />
@@ -121,17 +107,17 @@ export default async function DashboardPage() {
             </p>
           </div>
         </div>
-        {/*Sing Out */}
-        <form action={handleSignOut}>
-          <Button variant="outline" type="submit">
-            Sign Out
-          </Button>
-        </form>
-      </header>
 
-      {/* Main Dashboard Grid */}
+        {/* Bouton de déconnexion */}
+        <div>
+          {/* Votre contenu */}
+          <SignOutButton />
+        </div>
+      </div>
+
+      {/* Grille du tableau de bord */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Profile Information */}
+        {/* Section Profil */}
         <Card className="lg:col-span-2">
           <CardHeader>
             <CardTitle>Account Information</CardTitle>
@@ -173,7 +159,7 @@ export default async function DashboardPage() {
           </CardContent>
         </Card>
 
-        {/* Connected Accounts */}
+        {/* Comptes connectés */}
         <Card>
           <CardHeader>
             <CardTitle>Connected Accounts</CardTitle>
@@ -203,7 +189,7 @@ export default async function DashboardPage() {
           </CardContent>
         </Card>
 
-        {/* Recent Activity */}
+        {/* Activité récente */}
         <Card className="lg:col-span-3">
           <CardHeader>
             <CardTitle>Recent Activity</CardTitle>
